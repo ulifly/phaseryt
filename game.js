@@ -1,6 +1,12 @@
+import { ScoreBoard } from "./components/scoreboard.js";
+
 export class Game extends Phaser.Scene {
   constructor() {
     super({ key: 'Game' });
+  }
+
+  init() {
+    this.scoreboard = new ScoreBoard(this);
   }
 
   preload() {
@@ -14,9 +20,12 @@ export class Game extends Phaser.Scene {
     this.physics.world.setBoundsCollision(true, true, true, false);
 
     const { width, height } = this.sys.game.config;
-    this.add.image(width / 2, height / 2, 'background');
+    const background = this.add.image(width / 2, height / 2, 'background');
+    background.setDisplaySize(width, height);
     this.gameOverImage = this.add.image(width / 2, height / 2, 'gameover');
     this.gameOverImage.visible = false;
+
+    this.scoreboard.create();
 
     this.platform = this.physics.add.image(400, 460, 'platform').setImmovable();
     this.platform.body.allowGravity = false;
@@ -42,7 +51,13 @@ export class Game extends Phaser.Scene {
   }
 
   hitPlatform(platform, ball) {
-    console.log('hit platform');
+    this.scoreboard.increasePoints(10);
+    let relativeImpact = ball.x - platform.x;
+    if (relativeImpact < 0.5 && relativeImpact > -0.5) {
+      ball.setVelocityX(Phaser.Math.Between(-10, 10));
+    } else {
+      ball.setVelocityX(ball.body.velocity.x + relativeImpact * 10);
+    }
   }
 
 
