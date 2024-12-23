@@ -33,7 +33,7 @@ export class Game extends Phaser.Scene {
 
     this.ball.setVelocity(velocity, 10);
 
-    this.physics.add.collider(this.platform, this.ball);
+    this.physics.add.collider(this.platform, this.ball, this.hitPlatform, null, this);
 
     this.ball.setBounce(1);
 
@@ -41,11 +41,16 @@ export class Game extends Phaser.Scene {
 
   }
 
+  hitPlatform(platform, ball) {
+    console.log('hit platform');
+  }
+
+
   update() {
     if (this.cursors.left.isDown) {
-      this.platform.setVelocityX(-200);
+      this.platform.setVelocityX(-500);
     } else if (this.cursors.right.isDown) {
-      this.platform.setVelocityX(200);
+      this.platform.setVelocityX(500);
     } else {
       this.platform.setVelocityX(0);
     }
