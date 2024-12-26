@@ -26,14 +26,24 @@ export class Game extends Phaser.Scene {
     const { width, height } = this.sys.game.config;
     const background = this.add.image(width / 2, height / 2, 'background');
     background.setDisplaySize(width, height);
+    
+    this.scoreboard.create();
+    
+    this.bricks = this.physics.add.staticGroup({
+      key: ['blackBrick', 'blueBrick',  'greenBrick', 'orangeBrick'],
+      frameQuantity: 10,
+      gridAlign: {
+        width: 10,
+        height: 4,
+        cellWidth: 68,
+        cellHeight: 32,
+        x: 70,
+        y: 100
+      }
+    });
+    
     this.gameOverImage = this.add.image(width / 2, height / 2, 'gameover');
     this.gameOverImage.visible = false;
-
-    this.scoreboard.create();
-
-    this.miGrupo = this.physics.add.staticGroup();
-    this.miGrupo.create(100, 100, 'blueBrick');
-    this.miGrupo.create(200, 100, 'blackBrick');
 
     // Platform
     this.platform = this.physics.add.image(400, 460, 'platform').setImmovable();
@@ -47,7 +57,8 @@ export class Game extends Phaser.Scene {
     this.ball.setData('glued', true);
 
     this.physics.add.collider(this.platform, this.ball, this.hitPlatform, null, this);
-    this.physics.add.collider(this.miGrupo, this.ball);
+
+    this.physics.add.collider(this.bricks, this.ball, this.bricksHit, null, this);
 
     this.ball.setBounce(1);
 
@@ -63,6 +74,11 @@ export class Game extends Phaser.Scene {
     } else {
       ball.setVelocityX(ball.body.velocity.x + relativeImpact * 10);
     }
+  }
+
+  bricksHit(ball, brick) {
+    brick.disableBody(true, true);
+    this.scoreboard.increasePoints(20);
   }
 
 
