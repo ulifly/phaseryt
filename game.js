@@ -14,6 +14,10 @@ export class Game extends Phaser.Scene {
     this.load.image('gameover', 'assets/img/gameover.png');
     this.load.image('platform', 'assets/img/platform.png');
     this.load.image('ball', 'assets/img/ball.png');
+    this.load.image('blueBrick', 'assets/img/brickBlue.png');
+    this.load.image('blackBrick', 'assets/img/brickBlack.png');
+    this.load.image('greenBrick', 'assets/img/brickGreen.png');
+    this.load.image('orangeBrick', 'assets/img/brickOrange.png');
   }
 
   create() {
@@ -27,6 +31,10 @@ export class Game extends Phaser.Scene {
 
     this.scoreboard.create();
 
+    this.miGrupo = this.physics.add.staticGroup();
+    this.miGrupo.create(100, 100, 'blueBrick');
+    this.miGrupo.create(200, 100, 'blackBrick');
+
     // Platform
     this.platform = this.physics.add.image(400, 460, 'platform').setImmovable();
     this.platform.body.allowGravity = false;
@@ -39,6 +47,7 @@ export class Game extends Phaser.Scene {
     this.ball.setData('glued', true);
 
     this.physics.add.collider(this.platform, this.ball, this.hitPlatform, null, this);
+    this.physics.add.collider(this.miGrupo, this.ball);
 
     this.ball.setBounce(1);
 
