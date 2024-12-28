@@ -18,6 +18,7 @@ export class Game extends Phaser.Scene {
     this.load.image('blackBrick', 'assets/img/brickBlack.png');
     this.load.image('greenBrick', 'assets/img/brickGreen.png');
     this.load.image('orangeBrick', 'assets/img/brickOrange.png');
+    this.load.image('congrats', 'assets/img/congratulations.png');
   }
 
   create() {
@@ -26,11 +27,11 @@ export class Game extends Phaser.Scene {
     const { width, height } = this.sys.game.config;
     const background = this.add.image(width / 2, height / 2, 'background');
     background.setDisplaySize(width, height);
-    
+
     this.scoreboard.create();
-    
+
     this.bricks = this.physics.add.staticGroup({
-      key: ['blackBrick', 'blueBrick',  'greenBrick', 'orangeBrick'],
+      key: ['blackBrick', 'blueBrick', 'greenBrick', 'orangeBrick'],
       frameQuantity: 10,
       gridAlign: {
         width: 10,
@@ -41,9 +42,11 @@ export class Game extends Phaser.Scene {
         y: 100
       }
     });
-    
+
     this.gameOverImage = this.add.image(width / 2, height / 2, 'gameover');
     this.gameOverImage.visible = false;
+    this.congratsImage = this.add.image(width / 2, height / 2, 'congrats');
+    this.congratsImage.visible = false;
 
     // Platform
     this.platform = this.physics.add.image(400, 460, 'platform').setImmovable();
@@ -67,7 +70,6 @@ export class Game extends Phaser.Scene {
   }
 
   hitPlatform(platform, ball) {
-    this.scoreboard.increasePoints(10);
     let relativeImpact = ball.x - platform.x;
     if (relativeImpact < 0.5 && relativeImpact > -0.5) {
       ball.setVelocityX(Phaser.Math.Between(-10, 10));
@@ -79,19 +81,26 @@ export class Game extends Phaser.Scene {
   bricksHit(ball, brick) {
     brick.disableBody(true, true);
     this.scoreboard.increasePoints(20);
+    if (this.bricks.countActive() === 30) {
+      this.congratsImage.visible = true
+      this.physics.pause();
+      this.ball.disableBody(true, true);
+      this.platform.disableBody(true, true);
+      this.bricks.setVisible(false);
+    }
   }
 
 
   update() {
     if (this.cursors.left.isDown) {
-      this.platform.setVelocityX(-500);
+      this.platform.setVelocityX(-600);
       if (this.ball.getData('glued')) {
-        this.ball.setVelocityX(-500);
+        this.ball.setVelocityX(-600);
       }
     } else if (this.cursors.right.isDown) {
-      this.platform.setVelocityX(500);
+      this.platform.setVelocityX(600);
       if (this.ball.getData('glued')) {
-        this.ball.setVelocityX(500);
+        this.ball.setVelocityX(600);
       }
     } else {
       this.platform.setVelocityX(0);
@@ -108,6 +117,9 @@ export class Game extends Phaser.Scene {
     if (this.ball.y > 500) {
       this.gameOverImage.visible = true;
       this.physics.pause();
+      this.ball.disableBody(true, true);
+      this.platform.disableBody(true, true);
+      this.bricks.setVisible(false);
     }
 
   }
