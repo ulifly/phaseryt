@@ -1,4 +1,4 @@
-import { ScoreBoard } from "./components/scoreboard.js";
+import { ScoreBoard } from "../components/scoreboard.js";
 
 export class Game extends Phaser.Scene {
   constructor() {
@@ -11,7 +11,6 @@ export class Game extends Phaser.Scene {
 
   preload() {
     this.load.image('background', 'assets/img/background.jpg');
-    this.load.image('gameover', 'assets/img/gameover.png');
     this.load.image('platform', 'assets/img/platform.png');
     this.load.image('ball', 'assets/img/ball.png');
     this.load.image('blueBrick', 'assets/img/brickBlue.png');
@@ -24,7 +23,7 @@ export class Game extends Phaser.Scene {
   create() {
     this.physics.world.setBoundsCollision(true, true, true, false);
 
-    const { width, height } = this.sys.game.config;
+    const { width, height } = this.sys.game.config;//mover a la configuración del juego
     const background = this.add.image(width / 2, height / 2, 'background');
     background.setDisplaySize(width, height);
 
@@ -43,8 +42,6 @@ export class Game extends Phaser.Scene {
       }
     });
 
-    this.gameOverImage = this.add.image(width / 2, height / 2, 'gameover');
-    this.gameOverImage.visible = false;
     this.congratsImage = this.add.image(width / 2, height / 2, 'congrats');
     this.congratsImage.visible = false;
 
@@ -82,11 +79,12 @@ export class Game extends Phaser.Scene {
     brick.disableBody(true, true);
     this.scoreboard.increasePoints(20);
     if (this.bricks.countActive() === 30) {
-      this.congratsImage.visible = true
-      this.physics.pause();
-      this.ball.disableBody(true, true);
-      this.platform.disableBody(true, true);
-      this.bricks.setVisible(false);
+      // this.congratsImage.visible = true
+      // this.physics.pause();
+      // this.ball.disableBody(true, true);
+      // this.platform.disableBody(true, true);
+      // this.bricks.setVisible(false);
+      this.scene.start('Congrats');
     }
   }
 
@@ -115,11 +113,12 @@ export class Game extends Phaser.Scene {
     }
 
     if (this.ball.y > 500) {
-      this.gameOverImage.visible = true;
-      this.physics.pause();
-      this.ball.disableBody(true, true);
-      this.platform.disableBody(true, true);
-      this.bricks.setVisible(false);
+      // this.gameOverImage.visible = true;
+      // this.physics.pause();
+      // this.ball.disableBody(true, true);
+      // this.platform.disableBody(true, true);
+      // this.bricks.setVisible(false);
+      this.scene.start('GameOver');
     }
 
   }
