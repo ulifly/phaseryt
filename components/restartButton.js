@@ -13,6 +13,7 @@ export class RestartButton {
 
   create() {
     this.startButton = this.relatedScene.add.sprite(400, 350, 'buttonR').setInteractive();
+    this.startGameSound = this.relatedScene.sound.add('startGameSample');
 
     this.startButton.on('pointerover', () => {
       this.startButton.setFrame(1);
@@ -24,6 +25,7 @@ export class RestartButton {
     })
 
     this.startButton.on('pointerdown', () => {
+      this.startGameSound.play();
       this.relatedScene.scene.start('Game');
     })
 

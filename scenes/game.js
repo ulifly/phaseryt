@@ -10,6 +10,7 @@ export class Game extends Phaser.Scene {
   }
 
   preload() {
+    // images
     this.load.image('background', 'assets/img/background.jpg');
     this.load.image('platform', 'assets/img/platform.png');
     this.load.image('ball', 'assets/img/ball.png');
@@ -18,6 +19,12 @@ export class Game extends Phaser.Scene {
     this.load.image('greenBrick', 'assets/img/brickGreen.png');
     this.load.image('orangeBrick', 'assets/img/brickOrange.png');
     this.load.image('congrats', 'assets/img/congratulations.png');
+
+    //audios
+    this.load.audio('gameOverSample', 'assets/sounds/gameover.mp3');
+    this.load.audio('brickImpactSample', 'assets/sounds/brick-impact.ogg');
+    this.load.audio('platformImpactSample', 'assets/sounds/platform-impact.ogg')
+    this.load.audio('startGameSample', 'assets/sounds/start-game.ogg');
   }
 
   create() {
@@ -55,19 +62,23 @@ export class Game extends Phaser.Scene {
     this.ball = this.physics.add.image(400, 440, 'ball');
     this.ball.setCollideWorldBounds(true);
     this.ball.setData('glued', true);
-
     this.physics.add.collider(this.platform, this.ball, this.hitPlatform, null, this);
-
     this.physics.add.collider(this.bricks, this.ball, this.bricksHit, null, this);
-
     this.ball.setBounce(1);
 
+    //input
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    //sounds
+    this.gameOverSound = this.sound.add('gameOverSample');
+    this.brickImpactSound = this.sound.add('brickImpactSample');
+    this.platformImpactSound = this.sound.add('platformImpactSample');
 
   }
 
   hitPlatform(platform, ball) {
     let relativeImpact = ball.x - platform.x;
+    this.platformImpactSound.play();
     if (relativeImpact < 0.5 && relativeImpact > -0.5) {
       ball.setVelocityX(Phaser.Math.Between(-10, 10));
     } else {
@@ -76,14 +87,10 @@ export class Game extends Phaser.Scene {
   }
 
   bricksHit(ball, brick) {
+    this.brickImpactSound.play();
     brick.disableBody(true, true);
     this.scoreboard.increasePoints(20);
     if (this.bricks.countActive() === 30) {
-      // this.congratsImage.visible = true
-      // this.physics.pause();
-      // this.ball.disableBody(true, true);
-      // this.platform.disableBody(true, true);
-      // this.bricks.setVisible(false);
       this.scene.start('Congrats');
     }
   }
@@ -113,11 +120,7 @@ export class Game extends Phaser.Scene {
     }
 
     if (this.ball.y > 500) {
-      // this.gameOverImage.visible = true;
-      // this.physics.pause();
-      // this.ball.disableBody(true, true);
-      // this.platform.disableBody(true, true);
-      // this.bricks.setVisible(false);
+      this.gameOverSound.play();
       this.scene.start('GameOver');
     }
 
